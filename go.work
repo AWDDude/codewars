@@ -1,0 +1,16 @@
+go 1.19
+
+use (
+	./balancedParentheses
+	./consecutiveStrings
+	./countBits
+	./digitalRoot
+	./formatDuration
+	./nextBigger
+	./orderWeight
+	./pickPeaks
+	./productFib
+	./rangeExtraction
+	./rectangleRotation
+	./snakesLadders
+)
