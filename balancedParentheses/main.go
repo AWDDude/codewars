@@ -1,35 +1,27 @@
 /*
 balancedParens 0 -> [""]
-balancedParens 1 -> ["()"]
-balancedParens 2 -> ["()()","(())"]
-balancedParens 3 -> ["()()()","(())()","()(())","(()())","((()))"]
+balancedParens 1 -> ["()"](1)
+balancedParens 2 -> ["()()","(())"] (2 + 1)-1
+balancedParens 3 -> ["()()()","(())()","()(())","(()())","((()))"] (3+2+1) -1
+balancedParens 3 -> ["()()()()","(())()()","()(())()","()()(())","(()())()", "((()))()","()(()())","()((()))","(()()())","((())())","(()(()))" ,"((()()))","(((())))"] (4+3+2+1) -1
 */
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func balancedParens(count int) string {
-	if count == 0 {
+	switch count {
+	case 0:
 		return "[\"\"]"
+	case 1:
+		return "[\"()\"]"
 	}
 
-	aaap := make([][][]Paren, count)
-	aap := [][]Paren{}
-	ap := []Paren{}
+	table := parenPerms(count)
 
-
-	for i := 1; i <= count; i++ {
-		aap = [][]Paren{}
-		for j := 0; j <= i; j++ {
-			ap = []Paren{}
-			for k := 0; k < i-j; k++ {
-				ap[k] = aaap[][][]
-			}
-			aap[j] = ap
-		}
-		aaap[i] = aap
-	}
 	s := "["
 	for i := range perms[count] {
 		s += "\"" + perms[count][i].Render() + "\""
@@ -37,16 +29,47 @@ func balancedParens(count int) string {
 	return s + "]"
 }
 
-type Paren struct {
-	Children []Paren
+func parenPerms(count int) [][][]*Paren {
+	if count == 1 {
+		return [][][]*Paren{{{}, {&Paren{}}}}
+	}
+
+	table := parenPerms(count - 1)
+	row := [][]*Paren{}
+	for i := 0; i <= count; i++ {
+		group := make([]*Paren, count-i)
+		for j := range group {
+			for k := range table[i] {
+				group[j] = &Paren{Children: table[i][k]}
+			}
+		}
+		row = append(row, group)
+	}
+	table = append(table, row)
+	return table
 }
 
-func (p Paren) Render() string {
+type Paren struct {
+	Children []*Paren
+}
+
+func (p *Paren) Render() string {
 	s := "("
 	for i := range p.Children {
 		s += p.Children[i].Render()
 	}
 	s += ")"
+	return s
+}
+
+type group []*Paren
+
+func (g group) Render() string {
+	s := "\""
+	for i := range g {
+		s += g[i].Render()
+	}
+	s += "\""
 	return s
 }
 
