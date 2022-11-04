@@ -41,11 +41,9 @@ func parenPerms(count int) []rowGroups {
 			for k := range table[i] {
 				// group [j] = &Paren{Children: table[i][k]}
 				group = append(group, &Paren{Children: table[i][k]})
-				if len(group) +1 + i == count-i {
-					row = append(row, group)
-				}
+			}
 		}
-		// row = append(row, group)
+		row = append(row, group)
 	}
 	table = append(table, row)
 	return table
