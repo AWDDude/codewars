@@ -28,22 +28,18 @@ func parenPerms(count int) []rowGroups {
 			rowGroups{groupParens{}},
 			rowGroups{groupParens{&Paren{}}},
 		}
-		// {{}, {&Paren{}}}
-		// return [][][]*Paren{{{}, {&Paren{}}}}
 	}
 
 	table := parenPerms(count - 1)
 	row := rowGroups{}
 	for i := 0; i < count; i++ {
-		var group groupParens
-		for j := 0; j < count-i; j++ {
-			// group = make(groupParens, count-i)
-			for k := range table[i] {
-				// group [j] = &Paren{Children: table[i][k]}
+		for k := range table[i] {
+			var group groupParens
+			for j := 0; j < count-i; j++ {
 				group = append(group, &Paren{Children: table[i][k]})
 			}
+			row = append(row, group)
 		}
-		row = append(row, group)
 	}
 	table = append(table, row)
 	return table
@@ -92,9 +88,8 @@ func main() {
 	// perms.Children = append(perms.Children, Paren{}, Paren{})
 	// fmt.Println(perms.Render())
 	// fmt.Println(balancedParens(0))
-	// fmt.Println(balancedParens(1))
-	// fmt.Println(balancedParens(2))
-	// fmt.Println(balancedParens(2))
+	fmt.Println(balancedParens(1))
+	fmt.Println(balancedParens(2))
 	fmt.Println(balancedParens(3))
 	// fmt.Println(balancedParens(4))
 	// fmt.Println(balancedParens(5))
