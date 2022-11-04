@@ -22,23 +22,23 @@ func balancedParens(count int) string {
 	return parenPerms(count)[count].Render()
 }
 
-func parenPerms(count int) []rowGroups {
+func parenPerms(count int) []RowGroups {
 	if count == 1 {
-		return []rowGroups{
-			rowGroups{groupParens{}},
-			rowGroups{groupParens{&Paren{}}},
+		return []RowGroups{
+			RowGroups{GroupParens{}},
+			RowGroups{GroupParens{&Paren{}}},
 		}
 	}
 
 	table := parenPerms(count - 1)
-	row := rowGroups{}
+	row := RowGroups{}
 	for i := 0; i < count; i++ {
-		for k := range table[i] {
-			var group groupParens
-			for j := 0; j < count-i; j++ {
-				group = append(group, &Paren{Children: table[i][k]})
+		for j := 0; j < count-i; j++ {
+			for k := range table[i] {
+				group := NewGroupParens(count - i)
+				group[j].Children = table[i][k]
+				row = append(row, group)
 			}
-			row = append(row, group)
 		}
 	}
 	table = append(table, row)
@@ -58,9 +58,17 @@ func (p *Paren) Render() string {
 	return s
 }
 
-type groupParens []*Paren
+func NewGroupParens(length int) GroupParens {
+	gp := make(GroupParens, length)
+	for i := range gp {
+		gp[i] = &Paren{}
+	}
+	return gp
+}
 
-func (g groupParens) Render() string {
+type GroupParens []*Paren
+
+func (g GroupParens) Render() string {
 	s := "\""
 	for i := range g {
 		s += g[i].Render()
@@ -69,9 +77,9 @@ func (g groupParens) Render() string {
 	return s
 }
 
-type rowGroups []groupParens
+type RowGroups []GroupParens
 
-func (r rowGroups) Render() string {
+func (r RowGroups) Render() string {
 	s := "["
 	for i := range r {
 		s += r[i].Render()
@@ -88,8 +96,8 @@ func main() {
 	// perms.Children = append(perms.Children, Paren{}, Paren{})
 	// fmt.Println(perms.Render())
 	// fmt.Println(balancedParens(0))
-	fmt.Println(balancedParens(1))
-	fmt.Println(balancedParens(2))
+	// fmt.Println(balancedParens(1))
+	// fmt.Println(balancedParens(2))
 	fmt.Println(balancedParens(3))
 	// fmt.Println(balancedParens(4))
 	// fmt.Println(balancedParens(5))
