@@ -19,31 +19,33 @@ func balancedParens(count int) string {
 	case 1:
 		return "[\"()\"]"
 	}
-
-	table := parenPerms(count)
-
-	s := "["
-	for i := range perms[count] {
-		s += "\"" + perms[count][i].Render() + "\""
-	}
-	return s + "]"
+	return parenPerms(count)[count].Render()
 }
 
-func parenPerms(count int) [][][]*Paren {
+func parenPerms(count int) []rowGroups {
 	if count == 1 {
-		return [][][]*Paren{{{}, {&Paren{}}}}
+		return []rowGroups{
+			rowGroups{groupParens{}},
+			rowGroups{groupParens{&Paren{}}},
+		}
+		// {{}, {&Paren{}}}
+		// return [][][]*Paren{{{}, {&Paren{}}}}
 	}
 
 	table := parenPerms(count - 1)
-	row := [][]*Paren{}
-	for i := 0; i <= count; i++ {
-		group := make([]*Paren, count-i)
-		for j := range group {
+	row := rowGroups{}
+	for i := 0; i < count; i++ {
+		var group groupParens
+		for j := 0; j < count-i; j++ {
+			// group = make(groupParens, count-i)
 			for k := range table[i] {
-				group[j] = &Paren{Children: table[i][k]}
-			}
+				// group [j] = &Paren{Children: table[i][k]}
+				group = append(group, &Paren{Children: table[i][k]})
+				if len(group) +1 + i == count-i {
+					row = append(row, group)
+				}
 		}
-		row = append(row, group)
+		// row = append(row, group)
 	}
 	table = append(table, row)
 	return table
@@ -62,14 +64,28 @@ func (p *Paren) Render() string {
 	return s
 }
 
-type group []*Paren
+type groupParens []*Paren
 
-func (g group) Render() string {
+func (g groupParens) Render() string {
 	s := "\""
 	for i := range g {
 		s += g[i].Render()
 	}
 	s += "\""
+	return s
+}
+
+type rowGroups []groupParens
+
+func (r rowGroups) Render() string {
+	s := "["
+	for i := range r {
+		s += r[i].Render()
+		if i < len(r)-1 {
+			s += ","
+		}
+	}
+	s += "]"
 	return s
 }
 
@@ -80,5 +96,8 @@ func main() {
 	// fmt.Println(balancedParens(0))
 	// fmt.Println(balancedParens(1))
 	// fmt.Println(balancedParens(2))
+	// fmt.Println(balancedParens(2))
 	fmt.Println(balancedParens(3))
+	// fmt.Println(balancedParens(4))
+	// fmt.Println(balancedParens(5))
 }
