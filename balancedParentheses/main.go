@@ -12,12 +12,12 @@ import (
 	"fmt"
 )
 
-func BalancedParens(count int) string {
+func BalancedParens(count int) []string {
 	switch count {
 	case 0:
-		return "[\"\"]"
+		return []string{""}
 	case 1:
-		return "[\"()\"]"
+		return []string{"()"}
 	}
 	return parenPerms(count)[count].Render()
 }
@@ -69,26 +69,21 @@ func NewGroupParens(length int) GroupParens {
 type GroupParens []*Paren
 
 func (g GroupParens) Render() string {
-	s := "\""
+	var s string
 	for i := range g {
 		s += g[i].Render()
 	}
-	s += "\""
 	return s
 }
 
 type RowGroups []GroupParens
 
-func (r RowGroups) Render() string {
-	s := "["
+func (r RowGroups) Render() []string {
+	var a []string
 	for i := range r {
-		s += r[i].Render()
-		if i < len(r)-1 {
-			s += ","
-		}
+		a = append(a, r[i].Render())
 	}
-	s += "]"
-	return s
+	return a
 }
 
 func main() {
