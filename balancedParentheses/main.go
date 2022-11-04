@@ -31,8 +31,8 @@ func parenPerms(count int) []RowGroups {
 	}
 
 	table := parenPerms(count - 1)
-	row := RowGroups{}
-	for i := 0; i < count; i++ {
+	row := RowGroups{NewGroupParens(count)}
+	for i := 1; i < count; i++ {
 		for j := 0; j < count-i; j++ {
 			for k := range table[i] {
 				group := NewGroupParens(count - i)
@@ -98,7 +98,7 @@ func main() {
 	// fmt.Println(balancedParens(0))
 	// fmt.Println(balancedParens(1))
 	// fmt.Println(balancedParens(2))
-	fmt.Println(balancedParens(3))
-	// fmt.Println(balancedParens(4))
+	// fmt.Println(balancedParens(3))
+	fmt.Println(balancedParens(4))
 	// fmt.Println(balancedParens(5))
 }
