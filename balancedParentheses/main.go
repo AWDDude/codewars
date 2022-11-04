@@ -12,7 +12,7 @@ import (
 	"fmt"
 )
 
-func balancedParens(count int) string {
+func BalancedParens(count int) string {
 	switch count {
 	case 0:
 		return "[\"\"]"
@@ -99,6 +99,6 @@ func main() {
 	// fmt.Println(balancedParens(1))
 	// fmt.Println(balancedParens(2))
 	// fmt.Println(balancedParens(3))
-	fmt.Println(balancedParens(4))
+	fmt.Println(BalancedParens(4))
 	// fmt.Println(balancedParens(5))
 }
