@@ -9,6 +9,7 @@ use (
 	./nextBigger
 	./orderWeight
 	./pickPeaks
+	./pongExample
 	./productFib
 	./rangeExtraction
 	./rectangleRotation
