@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	foregroundColor := tcell.ColorReset
-	backgroundColor := tcell.ColorReset
+	style := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
 
 	screen, err := tcell.NewScreen()
 	if err != nil {
@@ -19,15 +18,13 @@ func main() {
 	if err := screen.Init(); err != nil {
 		log.Fatal(err.Error())
 	}
-	style := tcell.StyleDefault.Background(backgroundColor).Foreground(foregroundColor)
 	screen.SetStyle(style)
+	ball := NewAssembly(1, 1, NewPart(0, 0, '*'))
 
-	ball := Assembly{
-		X:     1,
-		Y:     1,
-		Parts: []Part{{X: 0, Y: 0, Char: '*'}},
-	}
+	// goroutine for rendering screen
+	go RenderScreen(screen, style, ball)
 
+	// main thread sits around waiting for input
 	for {
 		switch event := screen.PollEvent().(type) {
 		case *tcell.EventResize:
@@ -41,40 +38,23 @@ func main() {
 				screen.Fini()
 				os.Exit(0)
 			case tcell.KeyRight:
-				ball.X++
+				ball.Move(1, 0)
 			case tcell.KeyLeft:
-				ball.X--
+				ball.Move(-1, 0)
 			case tcell.KeyDown:
-				ball.Y++
+				ball.Move(0, 1)
 			case tcell.KeyUp:
-				ball.Y--
+				ball.Move(0, -1)
 			}
 		}
+	}
+}
 
-		ball.Render(screen, style)
-
+func RenderScreen(screen tcell.Screen, style tcell.Style, objects ...*Assembly) {
+	for {
+		for i := range objects {
+			objects[i].Render(screen, style)
+		}
 		screen.Show()
 	}
-}
-
-type Assembly struct {
-	X, Y, oldX, oldY int
-	Parts            []Part
-}
-
-func (a *Assembly) Render(screen tcell.Screen, style tcell.Style) {
-	// remove old
-	for i := range a.Parts {
-		screen.SetContent(a.oldX+a.Parts[i].X, a.oldY+a.Parts[i].Y, ' ', nil, style)
-	}
-	// add new
-	for i := range a.Parts {
-		screen.SetContent(a.X+a.Parts[i].X, a.Y+a.Parts[i].Y, a.Parts[i].Char, nil, style)
-		a.oldX, a.oldY = a.X, a.Y
-	}
-}
-
-type Part struct {
-	X, Y int
-	Char rune
 }
