@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -20,9 +21,19 @@ func main() {
 	}
 	screen.SetStyle(style)
 	ball := NewAssembly(1, 1, NewPart(0, 0, '*'))
+	leftPaddle := NewAssembly(0, 1, NewPart(0, -1, '|'), NewPart(0, 0, '|'), NewPart(0, 1, '|'))
 
 	// goroutine for rendering screen
-	go RenderScreen(screen, style, ball)
+	go RenderScreen(screen, style, ball, leftPaddle)
+
+	ballTimer := time.NewTicker(time.Millisecond * 100)
+	go func() {
+		x, y := 2, 1
+		for {
+			<-ballTimer.C
+			ball.Move(x, y)
+		}
+	}()
 
 	// main thread sits around waiting for input
 	for {
@@ -37,14 +48,10 @@ func main() {
 			case tcell.KeyCtrlC:
 				screen.Fini()
 				os.Exit(0)
-			case tcell.KeyRight:
-				ball.Move(1, 0)
-			case tcell.KeyLeft:
-				ball.Move(-1, 0)
 			case tcell.KeyDown:
-				ball.Move(0, 1)
+				leftPaddle.Move(0, 1)
 			case tcell.KeyUp:
-				ball.Move(0, -1)
+				leftPaddle.Move(0, -1)
 			}
 		}
 	}
