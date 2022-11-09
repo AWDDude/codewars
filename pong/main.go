@@ -51,6 +51,7 @@ func main() {
 	go RenderScreen(screen, style, scoreBoard, ball, leftPaddle, rightPaddle)
 
 	ballTimer := time.NewTicker(time.Millisecond * 100)
+	// goroutine for moving the ball, keeping score, and determining winner
 	go func() {
 		var ballPos component.Coordinates
 		slope := component.Coordinates{X: 1, Y: 0}
