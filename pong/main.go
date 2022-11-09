@@ -67,7 +67,7 @@ func main() {
 			ballPos = ball.CurrentPosition()
 
 			slopeOffsetModifier = -1
-			if slope.Y < 0 {
+			if slope.X < 0 {
 				slopeOffsetModifier = 1
 			}
 
@@ -99,15 +99,15 @@ func main() {
 				slope.X *= -1
 				switch ballPos.Y - leftPaddle.CurrentPosition().Y {
 				case -2:
-					slope.Y += 2 * slopeOffsetModifier
+					slope.Y += 2 * -slopeOffsetModifier
 				case -1:
-					slope.Y += 1 * slopeOffsetModifier
+					slope.Y += 1 * -slopeOffsetModifier
 				case 0:
 					// don't change the slope
 				case 1:
-					slope.Y += -1 * slopeOffsetModifier
+					slope.Y += -1 * -slopeOffsetModifier
 				case 2:
-					slope.Y += -2 * slopeOffsetModifier
+					slope.Y += -2 * -slopeOffsetModifier
 				default:
 					if incrementScore(rightScore) {
 						screen.Fini()
