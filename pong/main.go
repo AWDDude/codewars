@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -47,46 +48,80 @@ func main() {
 	)
 
 	// goroutine for rendering screen
-	go RenderScreen(screen, style, ball, leftPaddle, rightPaddle)
+	go RenderScreen(screen, style, scoreBoard, ball, leftPaddle, rightPaddle)
 
 	ballTimer := time.NewTicker(time.Millisecond * 100)
 	go func() {
 		var ballPos component.Coordinates
-		slope := component.Coordinates{X: 1, Y: RandNum(2) + 1}
+		slope := component.Coordinates{X: 1, Y: 0}
 		if CoinFlip() {
 			slope.X *= -1
 		}
-		if CoinFlip() {
-			slope.Y *= -1
-		}
+
+		var slopeOffsetModifier int
 		for {
 			<-ballTimer.C
 
 			maxWidth, maxHeight = screen.Size()
 			ballPos = ball.CurrentPosition()
 
+			slopeOffsetModifier = -1
+			if slope.Y < 0 {
+				slopeOffsetModifier = 1
+			}
+
 			// right
-			if ballPos.X > maxWidth-4 {
+			if ballPos.X >= maxWidth-2 {
 				slope.X *= -1
-				switch ballPos.X - rightPaddle.CurrentPosition().X {
+				switch ballPos.Y - rightPaddle.CurrentPosition().Y {
 				case -2:
-					slope.Y += 2
+					slope.Y += 2 * slopeOffsetModifier
 				case -1:
-					slope.Y += 1
+					slope.Y += 1 * slopeOffsetModifier
 				case 0:
 					// don't change the slope
 				case 1:
-					slope.Y += -1
-				case -2:
-					slope.Y += -1
+					slope.Y += -1 * slopeOffsetModifier
+				case 2:
+					slope.Y += -2 * slopeOffsetModifier
 				default:
-
+					if incrementScore(leftScore) {
+						screen.Fini()
+						fmt.Println("Left Player Wins!!!")
+						os.Exit(0)
+					}
 				}
 
 			}
 			// left
-			if ballPos.X < 3 {
+			if ballPos.X <= 1 {
 				slope.X *= -1
+				switch ballPos.Y - leftPaddle.CurrentPosition().Y {
+				case -2:
+					slope.Y += 2 * slopeOffsetModifier
+				case -1:
+					slope.Y += 1 * slopeOffsetModifier
+				case 0:
+					// don't change the slope
+				case 1:
+					slope.Y += -1 * slopeOffsetModifier
+				case 2:
+					slope.Y += -2 * slopeOffsetModifier
+				default:
+					if incrementScore(rightScore) {
+						screen.Fini()
+						fmt.Println("Right Player Wins!!!")
+						os.Exit(0)
+					}
+				}
+			}
+
+			// limit how much the slope can be changed
+			if slope.Y > 2 {
+				slope.Y = 2
+			}
+			if slope.Y < -2 {
+				slope.Y = -2
 			}
 
 			// bottom
@@ -94,7 +129,7 @@ func main() {
 				slope.Y *= -1
 			}
 			// top
-			if ballPos.Y < 1 {
+			if ballPos.Y < 6 {
 				slope.Y *= -1
 			}
 
@@ -103,6 +138,7 @@ func main() {
 	}()
 
 	// main thread sits around waiting for input
+	var y int
 	for {
 		switch event := screen.PollEvent().(type) {
 		case *tcell.EventResize:
@@ -118,17 +154,45 @@ func main() {
 			case tcell.KeyRune:
 				switch event.Rune() {
 				case 'w':
-					leftPaddle.Move(component.Coordinates{X: 0, Y: -1})
+					y = -1
+					if leftPaddle.CurrentPosition().Y <= 0 {
+						y = 0
+					}
+					leftPaddle.Move(component.Coordinates{X: 0, Y: y})
 				case 's':
-					leftPaddle.Move(component.Coordinates{X: 0, Y: 1})
+					y = 1
+					if leftPaddle.CurrentPosition().Y >= maxHeight {
+						y = 0
+					}
+					leftPaddle.Move(component.Coordinates{X: 0, Y: y})
 				case 'i':
-					rightPaddle.Move(component.Coordinates{X: 0, Y: -1})
+					y = -1
+					if rightPaddle.CurrentPosition().Y <= 0 {
+						y = 0
+					}
+					rightPaddle.Move(component.Coordinates{X: 0, Y: y})
 				case 'k':
-					rightPaddle.Move(component.Coordinates{X: 0, Y: 1})
+					y = 1
+					if rightPaddle.CurrentPosition().Y >= maxHeight {
+						y = 0
+					}
+					rightPaddle.Move(component.Coordinates{X: 0, Y: y})
 				}
 			}
 		}
 	}
+}
+
+func incrementScore(c *component.Component) bool {
+	win := false
+	c.Mutex.Lock()
+	c.Char++
+	if c.Char > '4' {
+		win = true
+	}
+	c.Mutex.Unlock()
+	c.Parent.Move(component.Coordinates{X: 0, Y: 0})
+	return win
 }
 
 func RandNum(n int) int {

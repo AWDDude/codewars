@@ -23,7 +23,7 @@ func New(x, y int, char rune, style tcell.Style, children ...*Component) *Compon
 }
 
 type Component struct {
-	mutex    sync.RWMutex
+	Mutex    sync.RWMutex
 	Char     rune
 	position Coordinates
 	ch       chan Coordinates
@@ -33,9 +33,9 @@ type Component struct {
 }
 
 func (c *Component) CurrentPosition() Coordinates {
-	c.mutex.RLock()
+	c.Mutex.RLock()
 	pos := c.position
-	c.mutex.RUnlock()
+	c.Mutex.RUnlock()
 	if c.Parent != nil {
 		pPos := c.Parent.CurrentPosition()
 		pos.X += pPos.X
@@ -51,9 +51,11 @@ func (c *Component) Move(mov Coordinates) {
 func (c *Component) Clear(screen tcell.Screen) {
 	pos := c.CurrentPosition()
 
+	c.Mutex.RLock()
 	if c.Char != 0 {
 		screen.SetContent(pos.X, pos.Y, ' ', nil, c.style)
 	}
+	c.Mutex.RUnlock()
 
 	for _, child := range c.Children {
 		child.Clear(screen)
@@ -63,9 +65,11 @@ func (c *Component) Clear(screen tcell.Screen) {
 func (c *Component) Write(screen tcell.Screen) {
 	pos := c.CurrentPosition()
 
+	c.Mutex.RLock()
 	if c.Char != 0 {
 		screen.SetContent(pos.X, pos.Y, c.Char, nil, c.style)
 	}
+	c.Mutex.RUnlock()
 
 	for _, child := range c.Children {
 		child.Write(screen)
@@ -78,10 +82,10 @@ func (c *Component) Render(screen tcell.Screen) {
 		// clear old
 		c.Clear(screen)
 		// update position
-		c.mutex.Lock()
+		c.Mutex.Lock()
 		c.position.X += newPos.X
 		c.position.Y += newPos.Y
-		c.mutex.Unlock()
+		c.Mutex.Unlock()
 		// write new
 		c.Write(screen)
 
