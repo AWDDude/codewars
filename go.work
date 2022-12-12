@@ -4,6 +4,7 @@ use (
 	./balancedParentheses
 	./consecutiveStrings
 	./countBits
+	./createPhoneNumber
 	./digitalRoot
 	./formatDuration
 	./nextBigger
