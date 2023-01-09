@@ -7,18 +7,27 @@ param (
 $Name = ($Name -replace ' ', '')
 
 [hashtable]$DefaultFiles = @{
-  'main.go' = "package main
+	'main.go' = "package main
 
 import (
-  `"fmt`"
+	`"`"
 )
-
-func main() {
-  fmt.Println($Name())
-}
 
 func $Name() {
 
+}
+"
+	'main_test.go' = "package main
+
+import (
+	`"testing`"
+
+	. `"github.com/onsi/gomega`"
+)
+
+func Test_$Name(t *testing.T) {
+	g := NewGomegaWithT(t)
+	g.Expect($Name()).To(Equal())
 }
 "
 }
