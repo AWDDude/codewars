@@ -16,5 +16,4 @@ use (
 	./rangeExtraction
 	./rectangleRotation
 	./snakesLadders
-	./treeByLevels
 )
