@@ -1,42 +1,46 @@
-function solution(number) {
-	const numerals = {
-  3000: "MMM",
-	2000: "MM",
-	1000: "M",
-	900: "CM",
-	800: "DCCC",
-	700: "DCC",
-	600: "DC",
-	500: "D",
-	400: "CD",
-	300: "CCC",
-	200: "CC",
-	100: "C",
-	90: "XC",
-	80: "LXXX",
-	70: "LXX",
-	60: "LX",
-	50: "L",
-	40: "XL",
-	30: "XXX",
-	20: "XX",
-	10: "X",
-	9: "IX",
-	8: "VIII",
-	7: "VII",
-	6: "VI",
-	5: "V",
-	4: "IV",
-	3: "III",
-	2: "II",
-	1: "I",
-};
+function solution(n) {
+  const numerals = [
+    { k: 3000, v: "MMM" },
+    { k: 2000, v: "MM" },
+    { k: 1000, v: "M" },
+    { k: 900, v: "CM" },
+    { k: 800, v: "DCCC" },
+    { k: 700, v: "DCC" },
+    { k: 600, v: "DC" },
+    { k: 500, v: "D" },
+    { k: 400, v: "CD" },
+    { k: 300, v: "CCC" },
+    { k: 200, v: "CC" },
+    { k: 100, v: "C" },
+    { k: 90, v: "XC" },
+    { k: 80, v: "LXXX" },
+    { k: 70, v: "LXX" },
+    { k: 60, v: "LX" },
+    { k: 50, v: "L" },
+    { k: 40, v: "XL" },
+    { k: 30, v: "XXX" },
+    { k: 20, v: "XX" },
+    { k: 10, v: "X" },
+    { k: 9, v: "IX" },
+    { k: 8, v: "VIII" },
+    { k: 7, v: "VII" },
+    { k: 6, v: "VI" },
+    { k: 5, v: "V" },
+    { k: 4, v: "IV" },
+    { k: 3, v: "III" },
+    { k: 2, v: "II" },
+    { k: 1, v: "I" },
+  ];
 
   let outStr = "";
-  for (const key in numerals) {
-    if (number >= key) {
-      number -= key;
-      outStr += numerals[key];
+  for (const numeral of numerals) {
+    if (n < numeral.k) {
+      continue;
+    }
+    n -= numeral.k;
+    outStr += numeral.v;
+    if (n == 0) {
+      break;
     }
   }
 
@@ -44,3 +48,4 @@ function solution(number) {
 }
 
 console.log(solution(1000));
+console.log(solution(887));
