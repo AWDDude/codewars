@@ -15,5 +15,6 @@ use (
 	./productFib
 	./rangeExtraction
 	./rectangleRotation
+	./romanNumerals
 	./snakesLadders
 )
