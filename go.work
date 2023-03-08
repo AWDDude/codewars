@@ -9,6 +9,7 @@ use (
 	./formatDuration
 	./humanReadableTime
 	./nextBigger
+	./obfuscatedHelloWorld
 	./orderWeight
 	./pickPeaks
 	./pong
