@@ -1,8 +1,8 @@
 package main
 
 import (
-	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 )
@@ -12,11 +12,13 @@ func main() {
 	flag.Parse()
 
 	rawRLE := getFileContents(*rleFilePath)
+	fmt.Print(rawRLE)
 }
 
-func getFileContents(path string) {
+func getFileContents(path string) string {
 	content, err := os.ReadFile(path)
 	if err != nil {
-		log.Fatal(errors.Join())
+		log.Fatal(err)
 	}
+	return string(content)
 }
